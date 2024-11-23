@@ -1,4 +1,5 @@
 import os
+import sys
 from tqdm import tqdm
 import soundfile as sf
 from openai import OpenAI
@@ -110,8 +111,9 @@ def main(wav_file, num_speakers, organization_field):
     md_code = llm_summarization(client, f"{output_dir}/RESULT.txt")
     
     print(md_code)
+    # output_dir 삭제
+    os.system(f"rm -rf {output_dir}")
     
-    os.rmdir("output")
         
 if __name__ == '__main__':
     main('examples/XtVE-9ywfDc.wav', 5, 'Culture')
