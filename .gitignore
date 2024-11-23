@@ -1,4 +1,8 @@
 examples/
 pretrained_models/
+output/
+datasets/
+
+
 API_KEY.txt
 tube_dataset.ipynb

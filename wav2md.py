@@ -20,7 +20,7 @@ def speaker_diarization(diar_model, wav_file, num_speakers, output_dir):
 
     for seg in segments:
 
-        if seg['end'] - seg['start'] < 1.0:
+        if seg['end'] - seg['start'] < 2.0:
             continue
 
         start = seg["start_sample"]
@@ -33,11 +33,11 @@ def speaker_diarization(diar_model, wav_file, num_speakers, output_dir):
         sf.write(file_path, speech, fs)
         # print(f"Speaker {seg['label']} ({seg['start']}s - {seg['end']}s) saved to {file_path}")
         
-    return [os.path.join(output_dir, file) for file in sorted(os.listdir(output_directory))]
+    return [os.path.join(output_dir, file) for file in sorted(os.listdir(output_dir))]
 
-def stt_transcription(stt_model, wav_file_list):
+def stt_transcription(stt_model, wav_file_list, output_dir):
     
-    with open('RESULT.txt', 'wt', encoding='utf-8') as f:
+    with open(f'{output_dir}/RESULT.txt', 'wt', encoding='utf-8') as f:
         
         for file in tqdm(wav_file_list):
             
@@ -99,16 +99,19 @@ def main(wav_file, num_speakers, organization_field):
     stt_model = WhisperModel("imTak/faster-whisper_Korean_L3turbo", device="cpu")
     client = OpenAI(api_key=API_KEY)
     
+    output_dir = 'output'   
     # speaker diarization
-    wav_file_list = speaker_diarization(diar_model, wav_file, num_speakers, "speaker_diarization")
+    wav_file_list = speaker_diarization(diar_model, wav_file, num_speakers, f"{output_dir}/speaker_diarization")
     
     # stt transcription
-    stt_transcription(stt_model, wav_file_list)
+    stt_transcription(stt_model, wav_file_list, output_dir)
     
     # llm summarization
-    md_code = llm_summarization(client, "RESULT.txt")
+    md_code = llm_summarization(client, f"{output_dir}/RESULT.txt")
     
     print(md_code)
+    
+    os.rmdir("output")
         
 if __name__ == '__main__':
-    main('example/XtVE-9ywfDc.wav', 5, 'Culture')
+    main('examples/XtVE-9ywfDc.wav', 5, 'Culture')
