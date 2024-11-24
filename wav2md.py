@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 from tqdm import tqdm
 import soundfile as sf
 from openai import OpenAI
@@ -92,7 +93,12 @@ def llm_summarization(client, text_file):
     return chat_completion.choices[0].message.content
 
         
-def main(wav_file, num_speakers, organization_field):
+def handler(input_json):
+    
+    wav_file = input_json['wav_file_path']
+    num_speakers = input_json['num_speakers']
+    organization_field = input_json['organization_field']
+    
     diar_model = Diarizer(
                   embed_model='xvec', # 'xvec' and 'ecapa' supported
                   cluster_method='sc' # 'ahc' and 'sc' supported
@@ -116,4 +122,4 @@ def main(wav_file, num_speakers, organization_field):
     
         
 if __name__ == '__main__':
-    main('examples/XtVE-9ywfDc.wav', 5, 'Culture')
+    handler('examples/XtVE-9ywfDc.wav', 5, 'Culture')

@@ -2,7 +2,10 @@ examples/
 pretrained_models/
 output/
 datasets/
-
+output_segments/
+packages/
 
 API_KEY.txt
 tube_dataset.ipynb
+pak.sh
+RESULT_cpu.txt
