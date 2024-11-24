@@ -116,9 +116,15 @@ def handler(input_json):
     # llm summarization
     md_code = llm_summarization(client, f"{output_dir}/RESULT.txt")
     
-    print(md_code)
     # output_dir 삭제
     os.system(f"rm -rf {output_dir}")
+    
+    result = {'statusCode': 200,
+                'headers': {
+                    'Content-Type': 'application/json'
+                },
+                'body': json.dumps({'result': md_code},ensure_ascii=False)
+            }
     
         
 if __name__ == '__main__':
