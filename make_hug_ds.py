@@ -3,6 +3,9 @@ from datasets import Dataset, Audio, DatasetDict, load_dataset, concatenate_data
 import pandas as pd
 import os
 
+def filter_audio_length(example):
+    return len(example['name']['array']) > 16000
+
 def youtube_to_datasets(playlist_name, playlist_url, lang):
     vc = VCtube(playlist_name, playlist_url, lang)
     vc.download_audio()
@@ -11,8 +14,8 @@ def youtube_to_datasets(playlist_name, playlist_url, lang):
 
     df = pd.read_csv(f'datasets/{playlist_name}/text/subtitle.csv')
     ds = Dataset.from_pandas(df).remove_columns(['Unnamed: 0', 'id', 'start', 'duration']).cast_column("name", Audio(sampling_rate=16000))
-        
-    return ds
+    
+    return ds.filter(filter_audio_length)
 
 lang = 'ko'
 # original_dataset = load_dataset('imTak/korean-speeck-Develop', split='train')

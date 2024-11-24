@@ -92,12 +92,29 @@ def llm_summarization(client, text_file):
     
     return chat_completion.choices[0].message.content
 
-        
-def handler(input_json):
+import boto3
+
+def download_file_from_s3(bucket_name, file_name, local_path):
+    s3 = boto3.client('s3')
+    s3.download_file(bucket_name, file_name, local_path)
     
-    wav_file = input_json['wav_file_path']
-    num_speakers = input_json['num_speakers']
-    organization_field = input_json['organization_field']
+    
+def handler(event):
+
+    
+    s3 = boto3.client('s3')
+    file_Name = event.get('fileName')  # Event에서 fileUrl을 추출
+    bucket_name = 'metting-bucket'
+
+    # S3에서 파일 다운로드
+    local_file_path = 'tmp/input_audio.wav'  # Lambda의 /tmp 디렉토리 사용
+    download_file_from_s3(bucket_name, file_Name, local_file_path)
+    
+    wav_file = local_file_path
+    print(wav_file)
+    return
+    num_speakers = int(event['num_speakers'])
+    organization_field = event['organization_field']
     
     diar_model = Diarizer(
                   embed_model='xvec', # 'xvec' and 'ecapa' supported
@@ -128,4 +145,9 @@ def handler(input_json):
     
         
 if __name__ == '__main__':
-    handler('examples/XtVE-9ywfDc.wav', 5, 'Culture')
+    input_event = {
+        'fileName': 'test.wav',
+        'num_speakers': 5,
+        'organization_field': 'Culture'
+    }
+    handler(input_event)
